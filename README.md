@@ -59,9 +59,9 @@
 - `Overflow` — результат не помещается в `long long`.
 - `Unknown operation` — передан неподдерживаемый знак операции.
 
-## Статический анализ и форматирование
+## Форматирование и статический анализ
 
-В проекте используются конфиги `.clang-format` и `.clang-tidy` для поддержания единого стиля кода и поиска потенциальных ошибок.
+В проекте настроены цели CMake для автоматического форматирования и статического анализа кода с помощью `clang-format` и `clang-tidy`.
 
 ### Установка инструментов
 
@@ -70,50 +70,30 @@
 sudo apt install clang-format clang-tidy
 ```
 
-**macOS:**
-```bash
-brew install clang-format clang-tidy
-```
 
-### Форматирование кода (clang-format)
 
-Конфигурация находится в файле [.clang-format](.clang-format).
+# Обычная сборка — без линтеров
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
 
-1. **Проверка формата (без изменения файлов):**
-   ```bash
-   # Проверка одного файла
-   clang-format --dry-run --Werror main.cpp
+# Только форматирование
+cmake -S . -B build -DENABLE_CLANG_FORMAT=ON
+cmake --build build --target format          # отформатировать
+cmake --build build --target format-check    # только проверить (CI)
 
-   # Рекурсивная проверка всех .cpp и .h файлов
-   find . -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
-   ```
+# Только clang-tidy
+cmake -S . -B build -DENABLE_CLANG_TIDY=ON
+cmake --build build --target tidy            # диагностика
+cmake --build build --target tidy-fix        # автоисправления
 
-2. **Применение форматирования:**
-   > ⚠️ Используйте с осторожностью, так как это изменяет файлы.
-   ```bash
-   clang-format -i main.cpp
-   ```
+# Всё сразу + анализ при каждой компиляции main
+cmake -S . -B build \
+      -DENABLE_CLANG_FORMAT=ON \
+      -DENABLE_CLANG_TIDY=ON \
+      -DENABLE_CLANG_TIDY_ON_BUILD=ON
+cmake --build build
 
-### Статический анализ (clang-tidy)
+# Выключить обратно (опции кэшируются — нужен явный OFF)
+cmake -S . -B build -DENABLE_CLANG_FORMAT=OFF -DENABLE_CLANG_TIDY=OFF \
+      -DENABLE_CLANG_TIDY_ON_BUILD=OFF
 
-Конфигурация проверок находится в файле [.clang-tidy](.clang-tidy). Для работы требуется файл компиляции `compile_commands.json`, который создается при сборке с флагом `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`.
-
-1. **Запуск анализа:**
-   ```bash
-   # Анализ конкретного файла
-   clang-tidy main.cpp -- -I.
-
-   # Использование run-clang-tidy для всего проекта
-   run-clang-tidy -p build
-   ```
-
-2. **Подавление ложных срабатываний:**
-   Если анализатор ошибается, можно отключить проверку для конкретной строки:
-   ```cpp
-   int x = someLegacyCall(); // NOLINT(cppcoreguidelines-...)
-   ```
-
-### Назначение конфигов
-
-- **.clang-format**: Отвечает только за визуальный стиль (отступы, пробелы, переносы строк). Не влияет на логику.
-- **.clang-tidy**: Ищет логические ошибки, утечки памяти, неэффективные конструкции и нарушения лучших практик C++.
