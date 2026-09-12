@@ -1,0 +1,22 @@
+---
+Checks: >
+  *,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-naming,
+  -llvm-header-guard,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -altera-id-dependent-backward-branch,
+  -fuchsia-*
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: file
+
+CheckOptions:
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'

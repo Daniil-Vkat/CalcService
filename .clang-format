@@ -1,0 +1,15 @@
+---
+BasedOnStyle: LLVM
+Language: Cpp
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 100
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+SpaceAfterTemplateKeyword: true
+SortIncludes: true
+IncludeBlocks: Preserve
+AllowShortFunctionsOnASingleLine: Empty
+NamespaceIndentation: None
+SpaceBeforeParens: ControlStatements
+CommentPragmas: '^ IWYU pragma:'
