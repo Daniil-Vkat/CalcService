@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(CalcDemo LANGUAGES CXX)
+project(calculator LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,9 +30,9 @@ FetchContent_MakeAvailable(calculat)
 # ------------------------------------------------------------------------------
 # Основной таргет
 # ------------------------------------------------------------------------------
-add_executable(main main.cpp)
-target_link_libraries(main PRIVATE mathops)
-target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic -Werror)
+add_executable(${PROJECT_NAME} main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE mathops)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 
 # Исходники, которые обрабатывают линтеры (зависимости из build/_deps не входят)
 set(PROJECT_SOURCES
@@ -96,3 +96,6 @@ if(ENABLE_CLANG_TIDY)
 elseif(ENABLE_CLANG_TIDY_ON_BUILD)
     message(WARNING "ENABLE_CLANG_TIDY_ON_BUILD=ON has no effect without ENABLE_CLANG_TIDY=ON")
 endif()
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION /usr/local/bin
+)
